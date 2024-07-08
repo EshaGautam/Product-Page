@@ -28,9 +28,10 @@
                                 </div>
                                 <div class="card__actions">
                                    <button clas="btn"><a href="/products/<%=product.id%>">View Details</a></button>
-                                    <form action="/add-to-cart" method="POST">
+                                    <!-- <form action="/add-to-cart" method="POST">
                                         <button class="btn">Add to Cart</button>
-                                    </form>
+                                    </form> -->
+                                    <%-include('../includes/add-cart.ejs',{product:product})%>
                                 </div>
                             </article>
                             <% } %>
