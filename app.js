@@ -2,11 +2,19 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const sequelize = require('./util/database');
+
+
 const User = require('./models/user');
 const Product = require('./models/product');
+const Cart = require('./models/cart')
+const CartItems = require('./models/cartItems')
+
+
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const errorController = require('./controllers/error');
+
+
 
 const app = express();
 
@@ -33,9 +41,14 @@ app.use((req, res, next) => {
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
-
 Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Product.belongsToMany(Cart, { through: CartItems });
+Cart.belongsToMany(Product, { through: CartItems });
+
+
 
 sequelize.sync()
     .then(() => {
@@ -48,7 +61,11 @@ sequelize.sync()
         return user;
     })
     .then((user) => {
-        console.log('Connected to database and user found or created:', user);
+
+       return user.createCart()
+      
+    })
+    .then(()=>{
         app.listen(3000, () => {
             console.log('Server is running on port 3000');
         });
